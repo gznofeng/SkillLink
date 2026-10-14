@@ -54,7 +54,9 @@ Windows 10/11 x64 解压即用。
 
 ## 下载使用
 
-从 [Releases](../../releases) 页面下载 `SkillLink-vX.Y.Z-win64.zip`，解压后双击 `skill-link.exe` 即可。
+[![下载](https://img.shields.io/badge/下载-SkillLink--v0.1.0--win64.zip-blue?logo=github)](https://github.com/gznofeng/SkillLink/releases/download/v0.1.0/SkillLink-v0.1.0-win64.zip)
+
+直链下载：**[SkillLink-v0.1.0-win64.zip](https://github.com/gznofeng/SkillLink/releases/download/v0.1.0/SkillLink-v0.1.0-win64.zip)** —— 解压后双击 `skill-link.exe` 即可。历史版本见 [Releases](../../releases) 页面。
 
 ## 从源码构建
 

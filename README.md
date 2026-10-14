@@ -54,7 +54,9 @@ Pure Rust + [Slint](https://slint.dev) native UI — **a single exe with zero ru
 
 ## Download
 
-Grab `SkillLink-vX.Y.Z-win64.zip` from the [Releases](../../releases) page, unzip, double-click `skill-link.exe`.
+[![Download](https://img.shields.io/badge/Download-SkillLink--v0.1.0--win64.zip-blue?logo=github)](https://github.com/gznofeng/SkillLink/releases/download/v0.1.0/SkillLink-v0.1.0-win64.zip)
+
+Direct link: **[SkillLink-v0.1.0-win64.zip](https://github.com/gznofeng/SkillLink/releases/download/v0.1.0/SkillLink-v0.1.0-win64.zip)** — unzip, double-click `skill-link.exe`. More versions on the [Releases](../../releases) page.
 
 ## Build from source
 
