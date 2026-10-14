@@ -1,0 +1,688 @@
+import { LineEdit, CheckBox, ListView, ScrollView } from "std-widgets.slint";
+
+export struct StatusBadge {
+    target-name: string,
+    label: string,
+}
+
+export struct StatusRow {
+    items: [StatusBadge],
+}
+
+export struct SkillRow {
+    dir-name: string,
+    name: string,
+    initial: string,
+    description: string,
+    badge-rows: [StatusRow],
+}
+
+export struct TargetItem {
+    id: int,
+    name: string,
+    path: string,
+    enabled: bool,
+}
+
+export struct DeployRow {
+    id: int,
+    name: string,
+    checked: bool,
+    status-label: string,
+}
+
+export struct Stats {
+    total: int,
+    linked: int,
+    conflict: int,
+    broken: int,
+}
+
+// ── 主题（参考 iot-dashboard Skin 全局样式）──
+export global Skin {
+    out property <color> menu-bar: #6E6BF2;         // 侧边栏紫蓝
+    out property <color> dark: #2D4B9A;             // 全局主按钮深蓝
+    out property <color> dark-hover: #24408A;       // 深蓝 hover
+    out property <color> danger: #E23B3B;           // 删除红
+    out property <color> danger-hover: #C92F2F;
+    out property <color> main-content: #f4f5f7;     // 主区浅灰
+    out property <color> box: #ffffff;              // 卡片
+    out property <color> shadow: #0000001a;         // 卡片投影
+    out property <color> text: #111827;
+    out property <color> text-dim: #6b7280;
+    out property <color> line: #d1d5db;
+    out property <color> header-bg: #eef0f3;        // 表头灰
+    out property <color> success-bg: #dcfce7;
+    out property <color> success-fg: #166534;
+    out property <color> warning-bg: #fef3c7;
+    out property <color> warning-fg: #92400e;
+    out property <color> error-bg: #fee2e2;
+    out property <color> error-fg: #991b1b;
+    out property <color> ghost-fg: #6b7280;
+}
+
+// ── 卡片（iot BoxBase：白底 + 圆角 + 投影，无边框）──
+component Card inherits Rectangle {
+    border-radius: 10px;
+    background: Skin.box;
+    drop-shadow-offset-x: 5px;
+    drop-shadow-offset-y: 5px;
+    drop-shadow-blur: 10px;
+    drop-shadow-color: Skin.shadow;
+}
+
+// ── 侧边栏菜单项（激活项：深蓝圆角块）──
+component MenuItem inherits Rectangle {
+    in property <string> label;
+    in property <bool> active;
+    callback clicked();
+    height: 48px;
+    background: transparent;
+    Rectangle {
+        x: 10px;
+        width: parent.width - 20px;
+        y: 4px;
+        height: 40px;
+        border-radius: 6px;
+        background: root.active ? Skin.dark
+            : ma.has-hover ? rgba(255, 255, 255, 0.12) : transparent;
+        Text {
+            text: root.label;
+            color: white;
+            font-size: 14px;
+            font-weight: root.active ? 700 : 400;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+    ma := TouchArea {
+        clicked => { root.clicked(); }
+        mouse-cursor: pointer;
+    }
+}
+
+// ── iOS 风格开关 ──
+component ToggleSwitch inherits Rectangle {
+    in property <bool> checked;
+    callback toggled(bool);
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    background: root.checked ? Skin.dark : #d1d5db;
+    animate background { duration: 120ms; }
+    knob := Rectangle {
+        x: root.checked ? parent.width - self.width - 3px : 3px;
+        y: 3px;
+        width: 18px;
+        height: 18px;
+        border-radius: 9px;
+        background: white;
+        animate x { duration: 120ms; easing: ease-out; }
+    }
+    ta := TouchArea {
+        clicked => { root.toggled(!root.checked); }
+        mouse-cursor: pointer;
+    }
+}
+
+// ── 红色删除按钮（垃圾桶）──
+component TrashButton inherits Rectangle {
+    callback clicked();
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: ta.has-hover ? Skin.danger-hover : Skin.danger;
+    // 垃圾桶图标（白色简单绘制）
+    Rectangle { // 桶盖
+        y: 8px;
+        x: (parent.width - 14px) / 2;
+        width: 14px;
+        height: 2px;
+        border-radius: 1px;
+        background: white;
+    }
+    Rectangle { // 桶身
+        y: 12px;
+        x: (parent.width - 10px) / 2;
+        width: 10px;
+        height: 12px;
+        border-radius: 2px;
+        background: white;
+    }
+    Rectangle { // 提手
+        y: 6px;
+        x: (parent.width - 6px) / 2;
+        width: 6px;
+        height: 3px;
+        border-radius: 1px;
+        background: white;
+    }
+    ta := TouchArea {
+        clicked => { root.clicked(); }
+        mouse-cursor: pointer;
+    }
+}
+
+// ── 文件夹按钮 ──
+component FolderButton inherits Rectangle {
+    callback clicked();
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: ta.has-hover ? #e2e5ea : #eef0f3;
+    border-width: 0px;
+    // 文件夹图标（灰色简单绘制）
+    Rectangle { // 翻盖
+        y: 9px;
+        x: 7px;
+        width: 8px;
+        height: 4px;
+        border-radius: 1px;
+        background: #9ca3af;
+    }
+    Rectangle { // 主体
+        y: 11px;
+        x: 7px;
+        width: 18px;
+        height: 11px;
+        border-radius: 2px;
+        background: #9ca3af;
+    }
+    ta := TouchArea {
+        clicked => { root.clicked(); }
+        mouse-cursor: pointer;
+    }
+}
+
+// ── 主按钮（深蓝实心，全局统一）──
+component PrimaryButton inherits Rectangle {
+    in property <string> text;
+    callback clicked();
+    height: 32px;
+    min-width: btn-text.preferred-width + 28px;
+    border-radius: 6px;
+    background: ta.has-hover ? Skin.dark-hover : Skin.dark;
+    btn-text := Text {
+        text: root.text;
+        color: white;
+        font-size: 13px;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+    ta := TouchArea {
+        clicked => { root.clicked(); }
+        mouse-cursor: pointer;
+    }
+}
+
+// ── 描边次按钮 ──
+component OutlineButton inherits Rectangle {
+    in property <string> text;
+    in property <color> bd: Skin.line;
+    in property <color> fg: Skin.text;
+    callback clicked();
+    height: 32px;
+    min-width: ob-text.preferred-width + 28px;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: root.bd;
+    background: ta.has-hover ? Skin.main-content : transparent;
+    ob-text := Text {
+        text: root.text;
+        color: root.fg;
+        font-size: 13px;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+    ta := TouchArea {
+        clicked => { root.clicked(); }
+        mouse-cursor: pointer;
+    }
+}
+
+// ── 顶部统计项（iot 顶部指标行）──
+component StatItem inherits VerticalLayout {
+    in property <string> label;
+    in property <int> value;
+    in property <color> accent;
+    in property <string> unit;
+    spacing: 2px;
+    Text { text: root.label; font-size: 13px; color: Skin.text; font-weight: 600; }
+    HorizontalLayout {
+        spacing: 4px;
+        alignment: center;
+        Text {
+            text: root.value;
+            font-size: 26px;
+            font-weight: 800;
+            color: root.accent;
+            vertical-alignment: center;
+        }
+        Text {
+            text: root.unit;
+            font-size: 12px;
+            color: Skin.text-dim;
+            vertical-alignment: center;
+            y: 6px;
+        }
+    }
+}
+
+// ── 右上角大按钮（深蓝，全局统一）──
+component BigDeployButton inherits Rectangle {
+    callback clicked();
+    width: 210px;
+    height: 64px;
+    border-radius: 8px;
+    background: ta.has-hover ? Skin.dark-hover : Skin.dark;
+    drop-shadow-offset-x: 4px;
+    drop-shadow-offset-y: 4px;
+    drop-shadow-blur: 8px;
+    drop-shadow-color: #2d4b9a44;
+    VerticalLayout {
+        padding-left: 16px;
+        padding-right: 16px;
+        alignment: center;
+        spacing: 2px;
+        Text { text: "全部部署（所有技能）"; color: white; font-size: 15px; font-weight: 700; horizontal-alignment: center; }
+        Text { text: "将所有启用的技能部署到其目标"; color: rgba(255, 255, 255, 0.85); font-size: 11px; horizontal-alignment: center; }
+    }
+    ta := TouchArea {
+        clicked => { root.clicked(); }
+        mouse-cursor: pointer;
+    }
+}
+
+export component MainWindow inherits Window {
+    title: "SkillLink skill仓库一键分发";
+    icon: @image-url("icon.png");
+    default-font-family: "Microsoft YaHei UI";
+    preferred-width: 1000px;
+    preferred-height: 660px;
+    background: Skin.main-content;
+
+    in property <[SkillRow]> skills;
+    in property <[TargetItem]> targets;
+    in property <[DeployRow]> deploy-rows;
+    in-out property <int> active-tab;
+    in-out property <int> selected-index;
+    in-out property <string> central-path;
+    in-out property <string> toast;
+    in-out property <bool> toast-error;
+    in-out property <bool> conflict-open;
+    in-out property <Stats> stats;
+
+    callback reload();
+    callback select-skill(int);
+    callback deploy-all-skills();
+    callback deploy-selected(string);
+    callback remove-selected(string);
+    callback toggle-check(int, bool);
+    callback conflict-choose(int);
+    callback save-central(string);
+    callback pick-folder();
+    callback add-target();
+    callback delete-target(int);
+    callback save-targets();
+    callback set-target-name(int, string);
+    callback set-target-path(int, string);
+    callback toggle-target-enabled(int, bool);
+
+    property <SkillRow> sel: selected-index >= 0 && selected-index < skills.length
+        ? skills[selected-index]
+        : { dir-name: "", name: "", initial: "", description: "", badge-rows: [] };
+
+    property <string> page-title: active-tab == 0 ? "Skills" : "配置";
+
+    HorizontalLayout {
+        // ── 左侧边栏（MenuBar）──
+        Rectangle {
+            width: 170px;
+            background: Skin.menu-bar;
+            VerticalLayout {
+                padding-top: 12px;
+                spacing: 4px;
+                // 品牌区（两行）
+                VerticalLayout {
+                    padding-left: 18px;
+                    padding-bottom: 12px;
+                    spacing: 4px;
+                    Text { text: "SkillLink"; color: white; font-size: 20px; font-weight: 800; }
+                    Text { text: "skill 仓库 · 一键分发"; color: rgba(255, 255, 255, 0.7); font-size: 11px; }
+                }
+                MenuItem { label: "Skills"; active: root.active-tab == 0; clicked => { root.active-tab = 0; } }
+                MenuItem { label: "配置"; active: root.active-tab == 1; clicked => { root.active-tab = 1; } }
+                Rectangle { vertical-stretch: 1; }
+                HorizontalLayout {
+                    padding-left: 18px;
+                    padding-bottom: 16px;
+                    Text {
+                        text: "0.1.0";
+                        color: rgba(255, 255, 255, 0.5);
+                        font-size: 11px;
+                    }
+                }
+            }
+        }
+
+        // ── 主内容区 ──
+        VerticalLayout {
+            padding: 25px;
+            spacing: 15px;
+            // 页面标题（Skills 页内嵌标题行，其余页显示在此）
+            if root.active-tab != 0 : Text {
+                text: root.page-title;
+                font-size: 18px;
+                font-weight: 800;
+                color: Skin.text;
+            }
+
+            // ── Skills ──
+            if root.active-tab == 0 : VerticalLayout {
+                spacing: 15px;
+                vertical-stretch: 1;
+                // 标题 + 统计 + 大按钮 同一行
+                HorizontalLayout {
+                    spacing: 24px;
+                    Text {
+                        text: "Skills";
+                        font-size: 22px;
+                        font-weight: 800;
+                        color: Skin.text;
+                        vertical-alignment: center;
+                    }
+                    Rectangle { horizontal-stretch: 1; }
+                    StatItem { label: "skill 总数"; value: root.stats.total; accent: Skin.menu-bar; unit: "个"; }
+                    StatItem { label: "已链接"; value: root.stats.linked; accent: Skin.success-fg; unit: "项"; }
+                    StatItem { label: "冲突"; value: root.stats.conflict; accent: Skin.warning-fg; unit: "项"; }
+                    StatItem { label: "断链"; value: root.stats.broken; accent: Skin.error-fg; unit: "项"; }
+                    Rectangle { width: 12px; }
+                    BigDeployButton {
+                        clicked => { root.deploy-all-skills(); }
+                    }
+                }
+                HorizontalLayout {
+                spacing: 20px;
+                vertical-stretch: 1;
+                // 左：skill 列表卡片
+                Card {
+                    width: 260px;
+                    clip: true;
+                    VerticalLayout {
+                        ListView {
+                            vertical-stretch: 1;
+                            for s[idx] in skills: Rectangle {
+                                height: 40px;
+                                background: transparent;
+                                // 高亮块内缩 + 圆角，不遮挡卡片圆角
+                                Rectangle {
+                                    x: 6px;
+                                    width: parent.width - 12px;
+                                    y: 2px;
+                                    height: 36px;
+                                    border-radius: 6px;
+                                    background: idx == root.selected-index ? rgba(110, 107, 242, 0.14)
+                                        : it.has-hover ? Skin.main-content : transparent;
+                                    Text {
+                                        text: s.name;
+                                        font-size: 13px;
+                                        vertical-alignment: center;
+                                        horizontal-alignment: center;
+                                        overflow: elide;
+                                        color: idx == root.selected-index ? Skin.menu-bar : Skin.text;
+                                        font-weight: idx == root.selected-index ? 700 : 400;
+                                    }
+                                }
+                                it := TouchArea {
+                                    clicked => { root.select-skill(idx); }
+                                    mouse-cursor: pointer;
+                                }
+                            }
+                        }
+                    }
+                }
+                // 右：详情卡片
+                Card {
+                    horizontal-stretch: 1;
+                    clip: true;
+                    ScrollView {
+                        if root.central-path == "" : VerticalLayout {
+                            padding: 10px;
+                            spacing: 10px;
+                            alignment: start;
+                            Text { text: "欢迎使用 SkillLink"; font-size: 18px; font-weight: 700; color: Skin.text; }
+                            VerticalLayout {
+                                spacing: 5px;
+                                Text { text: "1. 先到 Targets 页设置「skill 仓库路径」（存放 skill 的文件夹）"; font-size: 13px; color: Skin.text-dim; }
+                                Text { text: "2. 往该文件夹放入若干子目录，每个子目录包含一个 SKILL.md 即被识别为一个 skill"; font-size: 13px; color: Skin.text-dim; wrap: word-wrap; }
+                                Text { text: "3. 回到本页勾选 target，一键部署"; font-size: 13px; color: Skin.text-dim; }
+                            }
+                            PrimaryButton {
+                                text: "去设置 skill 仓库路径 →";
+                                clicked => { root.active-tab = 1; }
+                            }
+                        }
+                        if root.central-path != "" && root.sel.dir-name == "" : VerticalLayout {
+                            padding: 10px;
+                            spacing: 10px;
+                            alignment: start;
+                            Text { text: "skill 仓库为空"; font-size: 18px; font-weight: 700; color: Skin.text; }
+                            Text {
+                                text: "当前路径：" + root.central-path + "\n把含 SKILL.md 的子目录放进去，或重新设置路径。";
+                                font-size: 13px;
+                                color: Skin.text-dim;
+                                wrap: word-wrap;
+                            }
+                            OutlineButton {
+                                text: "重新设置路径 →";
+                                clicked => { root.active-tab = 1; }
+                            }
+                        }
+                        if root.sel.dir-name != "" : VerticalLayout {
+                            padding: 5px;
+                            spacing: 8px;
+                            alignment: start;
+                            // 标题行
+                            Text { text: root.sel.name; font-size: 19px; font-weight: 700; color: Skin.text; }
+                            Text { text: root.sel.description; font-size: 13px; color: Skin.text-dim; wrap: word-wrap; }
+                            // 徽章区（纯文字，同 ui.png）
+                            VerticalLayout {
+                                padding-top: 12px;
+                                spacing: 2px;
+                                for row in sel.badge-rows: HorizontalLayout {
+                                    spacing: 24px;
+                                    alignment: start;
+                                    for st in row.items: Text {
+                                        text: st.target-name + ": " + st.label;
+                                        font-size: 12px;
+                                        color: Skin.text;
+                                        vertical-alignment: center;
+                                    }
+                                }
+                            }
+                            VerticalLayout {
+                                padding-top: 16px;
+                                Text { text: "部署目标（仅启用项）"; font-size: 13px; font-weight: 600; color: Skin.text; }
+                            }
+                            VerticalLayout {
+                                spacing: 6px;
+                                padding-top: 6px;
+                                if root.deploy-rows.length == 0 : Text { text: "无启用的 target"; font-size: 12px; color: Skin.text-dim; }
+                                for r in deploy-rows: HorizontalLayout {
+                                    spacing: 8px;
+                                    alignment: start;
+                                    CheckBox {
+                                        checked: r.checked;
+                                        toggled => { root.toggle-check(r.id, self.checked); }
+                                    }
+                                    Text { text: r.name; font-size: 13px; vertical-alignment: center; color: Skin.text; }
+                                    Rectangle { horizontal-stretch: 1; }
+                                }
+                            }
+                            HorizontalLayout {
+                                spacing: 10px;
+                                padding-top: 16px;
+                                alignment: start;
+                                PrimaryButton { text: "部署此技能"; clicked => { root.deploy-selected(root.sel.dir-name); } }
+                                OutlineButton { text: "移除链接"; fg: Skin.error-fg; clicked => { root.remove-selected(root.sel.dir-name); } }
+                            }
+                        }
+                    }
+                }
+                }
+            }
+
+            // ── 配置（Targets）──
+            if root.active-tab == 1 : VerticalLayout {
+                spacing: 15px;
+                // 卡片一：skill 仓库路径（单行）
+                Card {
+                    clip: true;
+                    VerticalLayout {
+                        padding: 16px;
+                        HorizontalLayout {
+                            spacing: 10px;
+                            alignment: center;
+                            Text { text: "skill 仓库路径"; font-size: 14px; font-weight: 700; color: Skin.text; vertical-alignment: center; }
+                            LineEdit {
+                                width: 480px;
+                                text: central-path;
+                                font-size: 13px;
+                                edited(text) => { central-path = text; }
+                            }
+                            FolderButton { clicked => { root.pick-folder(); } }
+                            PrimaryButton {
+                                text: "保存路径";
+                                clicked => { root.save-central(central-path); }
+                            }
+                        }
+                    }
+                }
+                // 卡片二：AI 工具目录表格
+                Card {
+                    vertical-stretch: 1;
+                    clip: true;
+                    VerticalLayout {
+                        spacing: 12px;
+                        // 标题行
+                        HorizontalLayout {
+                            padding: 16px;
+                            padding-bottom: 0px;
+                            spacing: 8px;
+                            Text { text: "AI 工具目录"; font-size: 16px; font-weight: 700; vertical-alignment: center; color: Skin.text; }
+                            Rectangle { horizontal-stretch: 1; }
+                            OutlineButton { text: "添加工具"; fg: Skin.text-dim; clicked => { root.add-target(); } }
+                            PrimaryButton { text: "保存配置"; clicked => { root.save-targets(); } }
+                        }
+                        // 表头（通栏）
+                        Rectangle {
+                            height: 40px;
+                            background: Skin.header-bg;
+                            HorizontalLayout {
+                                padding-left: 16px;
+                                padding-right: 16px;
+                                spacing: 16px;
+                                alignment: center;
+                                Text { text: "名称"; width: 120px; font-size: 13px; font-weight: 700; color: Skin.text; vertical-alignment: center; }
+                                Text { text: "路径"; width: 480px; font-size: 13px; font-weight: 700; color: Skin.text; vertical-alignment: center; }
+                                Text { text: "启用"; width: 70px; font-size: 13px; font-weight: 700; color: Skin.text; horizontal-alignment: center; vertical-alignment: center; }
+                                Text { text: "操作"; width: 70px; font-size: 13px; font-weight: 700; color: Skin.text; horizontal-alignment: center; vertical-alignment: center; }
+                            }
+                        }
+                        // 数据行
+                        for t in targets: Rectangle {
+                            height: 56px;
+                            HorizontalLayout {
+                                padding-left: 16px;
+                                padding-right: 16px;
+                                spacing: 16px;
+                                alignment: center;
+                                LineEdit {
+                                    width: 120px;
+                                    text: t.name;
+                                    font-size: 13px;
+                                    edited(text) => { root.set-target-name(t.id, text); }
+                                }
+                                LineEdit {
+                                    width: 480px;
+                                    text: t.path;
+                                    font-size: 13px;
+                                    edited(text) => { root.set-target-path(t.id, text); }
+                                }
+                                Rectangle {
+                                    width: 70px;
+                                    ToggleSwitch {
+                                        x: (parent.width - self.width) / 2;
+                                        y: (parent.height - self.height) / 2;
+                                        checked: t.enabled;
+                                        toggled(nv) => { root.toggle-target-enabled(t.id, nv); }
+                                    }
+                                }
+                                Rectangle {
+                                    width: 70px;
+                                    TrashButton {
+                                        x: (parent.width - self.width) / 2;
+                                        y: (parent.height - self.height) / 2;
+                                        clicked => { root.delete-target(t.id); }
+                                    }
+                                }
+                            }
+                        }
+                        Rectangle { vertical-stretch: 1; }
+                    }
+                }
+            }
+        }
+    }
+
+    // ── 冲突弹窗 ──
+    if conflict-open : Rectangle {
+        background: #00000066;
+        TouchArea { }
+        Card {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            width: 400px;
+            height: 152px;
+            border-radius: 10px;
+            VerticalLayout {
+                padding: 18px;
+                spacing: 10px;
+                Text { text: "检测到冲突"; font-size: 16px; font-weight: 700; color: Skin.text; }
+                Text { text: "目标处已存在真实目录/文件。请选择处理方式："; font-size: 13px; color: Skin.text-dim; wrap: word-wrap; }
+                HorizontalLayout {
+                    spacing: 8px;
+                    padding-top: 6px;
+                    alignment: start;
+                    PrimaryButton { text: "备份后覆盖（默认）"; clicked => { root.conflict-choose(0); } }
+                    OutlineButton { text: "直接删除原 skill"; bd: Skin.error-bg; fg: Skin.error-fg; clicked => { root.conflict-choose(1); } }
+                }
+            }
+        }
+    }
+
+    // ── toast ──
+    if toast != "" : Rectangle {
+        x: parent.width / 2 - self.width / 2;
+        y: parent.height - self.height - 28px;
+        width: toast-text.preferred-width + 28px;
+        height: 34px;
+        border-radius: 8px;
+        background: toast-error ? #b91c1cf2 : #111827ee;
+        HorizontalLayout {
+            padding-left: 14px;
+            padding-right: 14px;
+            toast-text := Text {
+                text: root.toast;
+                color: white;
+                vertical-alignment: center;
+                font-size: 12px;
+            }
+        }
+        Timer {
+            interval: toast-error ? 6s : 2.5s;
+            running: root.toast != "";
+            triggered => { root.toast = ""; }
+        }
+    }
+}

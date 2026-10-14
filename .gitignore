@@ -1,0 +1,24 @@
+# ===== Rust 构建产物 =====
+/target/
+**/*.rs.bk
+
+# ===== 打包 staging（脚本生成，使用说明.txt 保留入库）=====
+/package/*
+!/package/使用说明.txt
+
+
+# ===== 临时 / 备份 =====
+*.log
+*.bak
+*.tmp
+*.zip
+
+# ===== IDE / 编辑器 =====
+.idea/
+.vscode/
+*.swp
+
+# ===== 系统 =====
+Thumbs.db
+Desktop.ini
+.DS_Store

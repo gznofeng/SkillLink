@@ -1,0 +1,18 @@
+[package]
+name = "skill-link-app"
+version = "0.1.0"
+edition = "2024"
+description = "SkillLink - native UI (Slint)"
+
+[[bin]]
+name = "skill-link"
+path = "src/main.rs"
+
+[dependencies]
+skill-link-core = { path = "../core" }
+slint = { version = "1", features = ["renderer-software"] }
+rfd = "0.15"
+
+[build-dependencies]
+slint-build = "1"
+winresource = "0.1"
