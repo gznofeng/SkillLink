@@ -7,6 +7,7 @@
 [![Release](https://img.shields.io/github/v/release/gznofeng/SkillLink?logo=github)](../../releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue)
+[![Homepage](https://img.shields.io/badge/%E5%9C%A8%E7%BA%BF%E4%BB%8B%E7%BB%8D-gznofeng.github.io%2FSkillLink-8A2BE2?logo=github)](https://gznofeng.github.io/SkillLink/)
 
 [English](README.md) | 简体中文
 
@@ -57,6 +58,8 @@ Windows 10/11 x64 解压即用。
 [![下载](https://img.shields.io/badge/下载-SkillLink--v0.1.0--win64.zip-blue?logo=github)](https://github.com/gznofeng/SkillLink/releases/download/v0.1.0/SkillLink-v0.1.0-win64.zip)
 
 直链下载：**[SkillLink-v0.1.0-win64.zip](https://github.com/gznofeng/SkillLink/releases/download/v0.1.0/SkillLink-v0.1.0-win64.zip)** —— 解压后双击 `skill-link.exe` 即可。历史版本见 [Releases](../../releases) 页面。
+
+项目介绍页：**https://gznofeng.github.io/SkillLink/**
 
 ## 从源码构建
 

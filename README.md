@@ -7,6 +7,7 @@
 [![Release](https://img.shields.io/github/v/release/gznofeng/SkillLink?logo=github)](../../releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue)
+[![Homepage](https://img.shields.io/badge/homepage-gznofeng.github.io%2FSkillLink-8A2BE2?logo=github)](https://gznofeng.github.io/SkillLink/)
 
 简体中文 | [English](README.md)
 
@@ -57,6 +58,8 @@ Pure Rust + [Slint](https://slint.dev) native UI — **a single exe with zero ru
 [![Download](https://img.shields.io/badge/Download-SkillLink--v0.1.0--win64.zip-blue?logo=github)](https://github.com/gznofeng/SkillLink/releases/download/v0.1.0/SkillLink-v0.1.0-win64.zip)
 
 Direct link: **[SkillLink-v0.1.0-win64.zip](https://github.com/gznofeng/SkillLink/releases/download/v0.1.0/SkillLink-v0.1.0-win64.zip)** — unzip, double-click `skill-link.exe`. More versions on the [Releases](../../releases) page.
+
+Project homepage: **https://gznofeng.github.io/SkillLink/**
 
 ## Build from source
 
