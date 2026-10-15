@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillLink — AI 编程工具 skills 一键分发</title>
+<meta name="description" content="所有 AI 编程工具的 skills 集中存放，通过 Windows junction 一键分发到 Claude Code、CodeBuddy、Codex、Cursor、Gemini CLI、OpenCode。单个 exe，零运行时依赖。">
+<style>
+  :root {
+    --bg: #0d1117; --bg2: #161b22; --border: #30363d;
+    --text: #e6edf3; --muted: #8b949e; --accent: #3fb950; --accent2: #58a6ff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+  }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+  header { border-bottom: 1px solid var(--border); }
+  header .container { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { font-weight: 700; font-size: 18px; color: var(--text); }
+  .logo span { color: var(--accent); }
+  header nav a { margin-left: 20px; color: var(--muted); font-size: 14px; }
+  header nav a:hover { color: var(--text); text-decoration: none; }
+
+  .hero { text-align: center; padding: 80px 0 56px; }
+  .hero h1 { font-size: 42px; letter-spacing: -1px; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p.tagline { font-size: 20px; color: var(--muted); margin-top: 12px; }
+  .hero p.sub { font-size: 15px; color: var(--muted); margin-top: 6px; }
+  .hero .tools { margin-top: 14px; font-size: 14px; color: var(--muted); }
+  .hero .tools b { color: var(--text); font-weight: 600; }
+  .cta { margin-top: 32px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; padding: 12px 26px; border-radius: 8px;
+    font-weight: 600; font-size: 15px; border: 1px solid var(--border);
+  }
+  .btn:hover { text-decoration: none; filter: brightness(1.15); }
+  .btn-primary { background: var(--accent); color: #0d1117; }
+  .btn-ghost { color: var(--text); }
+
+  section { padding: 48px 0; border-top: 1px solid var(--border); }
+  h2 { font-size: 26px; margin-bottom: 24px; }
+  h2 .en { font-size: 14px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+
+  .shot { width: 100%; border: 1px solid var(--border); border-radius: 10px; display: block; }
+  .shot + p.cap { margin-top: 8px; margin-bottom: 28px; }
+  p.cap { color: var(--muted); font-size: 14px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px;
+  }
+  .card h3 { font-size: 16px; margin-bottom: 8px; }
+  .card h3 .icon { margin-right: 8px; }
+  .card p { color: var(--muted); font-size: 14px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { border: 1px solid var(--border); padding: 10px 14px; text-align: left; }
+  th { background: var(--bg2); }
+  td.muted { color: var(--muted); }
+  .st { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+  .st-ok   { background: #1a3d1f; color: #7ee787; }
+  .st-na   { background: #2d333b; color: #adbac7; }
+  .st-warn { background: #4d3800; color: #e3b341; }
+  .st-err  { background: #5c1a1a; color: #ff8182; }
+
+  footer { border-top: 1px solid var(--border); padding: 28px 0; text-align: center; color: var(--muted); font-size: 14px; }
+  @media (max-width: 640px) { .hero h1 { font-size: 30px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="logo">Skill<span>Link</span></div>
+    <nav>
+      <a href="#features">功能</a>
+      <a href="#states">状态</a>
+      <a href="https://github.com/gznofeng/SkillLink">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>Skill<em>Link</em> — skills 一键分发</h1>
+    <p class="tagline">所有 AI 编程工具的 skills 集中存放，Windows junction 一键分发</p>
+    <p class="sub">Pure Rust + Slint native UI · 单个 exe · 零运行时依赖（无需 WebView2 / .NET）</p>
+    <p class="tools">支持 <b>Claude Code · CodeBuddy · Codex · Cursor · Gemini CLI · OpenCode</b></p>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/gznofeng/SkillLink/releases/download/v0.1.0/SkillLink-v0.1.0-win64.zip">⬇ 下载 SkillLink v0.1.0 (win64)</a>
+      <a class="btn btn-ghost" href="https://github.com/gznofeng/SkillLink">GitHub 仓库 →</a>
+    </div>
+  </div>
+
+  <section id="screenshots">
+    <h2>界面预览<span class="en">Screenshots</span></h2>
+    <img class="shot" src="skills.png" alt="Skills 页：技能列表与链接状态">
+    <p class="cap">Skills —— 左侧技能列表，右侧四态链接状态 + 勾选部署</p>
+    <img class="shot" src="setup.png" alt="配置页：中央仓库路径与 AI 工具目录">
+    <p class="cap">配置 —— 中央仓库路径与 AI 工具目录管理</p>
+  </section>
+
+  <section id="features">
+    <h2>功能特性<span class="en">Features</span></h2>
+    <div class="grid">
+      <div class="card"><h3><span class="icon">📁</span>中央仓库</h3><p>所有 skills 集中在一个目录（单一事实源），自动扫描含 SKILL.md 的子目录并解析 frontmatter。</p></div>
+      <div class="card"><h3><span class="icon">🔗</span>Junction 分发</h3><p>通过 <code>mklink /J</code> 创建目录联接，无需管理员权限，源目录与目标目录保持实时同步。</p></div>
+      <div class="card"><h3><span class="icon">🛡️</span>安全语义</h3><p>移除链接仅删除 junction 本身，绝不穿透删除真实目录；冲突时自动备份为 <code>.bak</code>。</p></div>
+      <div class="card"><h3><span class="icon">🎯</span>四态检测</h3><p>每个 skill × 每个目标目录的链接状态实时检测，部署前心中有数。</p></div>
+      <div class="card"><h3><span class="icon">⚙️</span>工具目录管理</h3><p>内置 Claude Code、Cursor 等主流工具默认路径，支持增删改、启用/停用。</p></div>
+      <div class="card"><h3><span class="icon">📦</span>绿色单文件</h3><p>纯 Rust 编译单个 exe，解压即用，配置持久化于 <code>%USERPROFILE%\.skill-client\</code>。</p></div>
+    </div>
+  </section>
+
+  <section id="states">
+    <h2>链接状态<span class="en">Link States</span></h2>
+    <table>
+      <tr><th>状态</th><th>含义</th></tr>
+      <tr><td><span class="st st-na">NotLinked</span></td><td class="muted">目标目录中不存在该 skill</td></tr>
+      <tr><td><span class="st st-ok">Linked</span></td><td class="muted">是 junction 且指向中央仓库对应 skill</td></tr>
+      <tr><td><span class="st st-warn">Conflict</span></td><td class="muted">目标处已存在真实目录/文件</td></tr>
+      <tr><td><span class="st st-err">Broken</span></td><td class="muted">是链接但指向失效</td></tr>
+    </table>
+  </section>
+
+  <section id="usage">
+    <h2>使用方法<span class="en">Getting Started</span></h2>
+    <div class="grid">
+      <div class="card"><h3>1. 下载</h3><p><a href="https://github.com/gznofeng/SkillLink/releases">Releases</a> 页下载 zip，解压后双击 <code>skill-link.exe</code>（Windows 10/11 x64）。</p></div>
+      <div class="card"><h3>2. 配置</h3><p>设置你的 skills 中央仓库路径，确认各 AI 工具的 skills 目录（默认值开箱即用）。</p></div>
+      <div class="card"><h3>3. 分发</h3><p>勾选要部署的 skill 与目标，点击部署；或「全部部署」一键同步所有。</p></div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="container">
+    SkillLink · MIT License ·
+    <a href="https://github.com/gznofeng/SkillLink">github.com/gznofeng/SkillLink</a>
+  </div>
+</footer>
+
+</body>
+</html>
